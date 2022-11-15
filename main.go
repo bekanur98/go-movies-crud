@@ -11,15 +11,15 @@ import (
 )
 
 type Movie struct {
-	ID string `json:"id"`
-	Isbn string `json:"isbn"`
-	Title string `json:"title"`
+	ID       string    `json:"id"`
+	Isbn     string    `json:"isbn"`
+	Title    string    `json:"title"`
 	Director *Director `json:"director"`
 }
 
 type Director struct {
 	Firstname string `json:"firstname"`
-	Lastname string `json:"lastname"`
+	Lastname  string `json:"lastname"`
 }
 
 var movies []Movie
@@ -41,7 +41,7 @@ func main() {
 
 }
 
-func getMovies(w http.ResponseWriter, r *http.Request)  {
+func getMovies(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	err := json.NewEncoder(w).Encode(movies)
 	if err != nil {
@@ -79,11 +79,11 @@ func createMovie(w http.ResponseWriter, r *http.Request) {
 func updateMovie(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
-	for _, item := range movies {
+	for index, item := range movies {
 		if item.ID == params["id"] {
+			movies = append(movies[:index], movies[index+1:]...)
 			var movie Movie
 			_ = json.NewDecoder(r.Body).Decode(&movie)
-			item = movie
 			json.NewEncoder(w).Encode(movie)
 			return
 		}
@@ -96,7 +96,7 @@ func deleteMovie(w http.ResponseWriter, r *http.Request) {
 
 	for index, item := range movies {
 		if item.ID == params["id"] {
-			movies = append(movies[:index], movies[index + 1:]...)
+			movies = append(movies[:index], movies[index+1:]...)
 			break
 		}
 	}
